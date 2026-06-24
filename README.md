@@ -36,6 +36,12 @@ That switches the Vite base to `/devtools/`, which matches the Pages site path.
 
 ## GitHub Pages
 
+Published site:
+
+```text
+https://alexjx.github.io/devtools/
+```
+
 The workflow in `.github/workflows/pages.yml`:
 
 1. installs dependencies with `npm ci`
