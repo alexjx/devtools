@@ -11,9 +11,12 @@ describe("qr payloads", () => {
     expect(sampleQrForm.url).toBe("https://example.com");
   });
 
-  it("uses URL and text values directly", () => {
+  it("normalizes URLs and keeps text values direct", () => {
     expect(buildQrPayload("url", form({ url: " https://example.com/a?b=1 " }))).toBe("https://example.com/a?b=1");
+    expect(buildQrPayload("url", form({ url: "example.com" }))).toBe("https://example.com");
+    expect(buildQrPayload("url", form({ url: "mailto:team@example.com" }))).toBe("mailto:team@example.com");
     expect(buildQrPayload("text", form({ text: "hello\nworld" }))).toBe("hello\nworld");
+    expect(buildQrPayload("text", form({ text: "example.com" }))).toBe("example.com");
   });
 
   it("builds mailto payloads with encoded optional fields", () => {

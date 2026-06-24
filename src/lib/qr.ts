@@ -1,4 +1,4 @@
-export type QrFormat = "url" | "text" | "email" | "phone" | "sms" | "whatsapp" | "wifi" | "vcard";
+export type QrPayloadKind = "url" | "text" | "email" | "phone" | "sms" | "whatsapp" | "wifi" | "vcard";
 
 export type WifiEncryption = "WPA" | "WEP" | "nopass";
 
@@ -55,6 +55,11 @@ function cleanPhone(value: string): string {
   return value.trim().replace(/[^\d+]/g, "");
 }
 
+function normalizeUrl(value: string): string {
+  const trimmed = value.trim();
+  return trimmed && !/^[a-z][a-z\d+.-]*:/i.test(trimmed) ? `https://${trimmed}` : trimmed;
+}
+
 function withQuery(base: string, params: Record<string, string>): string {
   const query = new URLSearchParams();
 
@@ -81,10 +86,17 @@ function vcardLine(name: string, value: string): string | null {
   return trimmed ? `${name}:${escapeVcard(trimmed)}` : null;
 }
 
-export function buildQrPayload(format: QrFormat, form: QrForm): string {
-  switch (format) {
+/**
+ * Builds the text encoded into the QR symbol.
+ *
+ * QR Code itself stores data using encoding modes such as numeric, alphanumeric,
+ * byte, Kanji, ECI, and FNC1. URL, email, Wi-Fi, and contact "types" are
+ * scanner-side classifications inferred from payload conventions after decode.
+ */
+export function buildQrPayload(kind: QrPayloadKind, form: QrForm): string {
+  switch (kind) {
     case "url":
-      return form.url.trim();
+      return normalizeUrl(form.url);
     case "text":
       return form.text;
     case "email":

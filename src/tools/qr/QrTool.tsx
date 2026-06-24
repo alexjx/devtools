@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import QRCode from "qrcode";
 import { Download } from "lucide-react";
-import { buildQrPayload, defaultQrForm, sampleQrForm, type QrFormat, type QrForm, type WifiEncryption } from "../../lib/qr";
+import { buildQrPayload, defaultQrForm, sampleQrForm, type QrPayloadKind, type QrForm, type WifiEncryption } from "../../lib/qr";
 import { ClearButton, CopyButton, Output, ToolLayout } from "../shared";
 
-const formats: Array<{ value: QrFormat; label: string }> = [
+const payloadKinds: Array<{ value: QrPayloadKind; label: string }> = [
   { value: "url", label: "URL" },
   { value: "text", label: "Text" },
   { value: "email", label: "Email" },
@@ -59,11 +59,11 @@ function DownloadButton({
 }
 
 export default function QrTool() {
-  const [format, setFormat] = useState<QrFormat>("url");
+  const [kind, setKind] = useState<QrPayloadKind>("url");
   const [form, setForm] = useState<QrForm>(defaultQrForm);
   const [rendered, setRendered] = useState<RenderedQr>({ svg: "", png: "", error: "" });
 
-  const payload = useMemo(() => buildQrPayload(format, form), [format, form]);
+  const payload = useMemo(() => buildQrPayload(kind, form), [kind, form]);
   const trimmedPayload = payload.trim();
 
   useEffect(() => {
@@ -138,30 +138,30 @@ export default function QrTool() {
     >
       <h2>QR Code</h2>
       <div className="field">
-        <span className="field-label" id="qr-format-label">
-          Format
+        <span className="field-label" id="qr-kind-label">
+          Payload template
         </span>
-        <div className="format-buttons" role="group" aria-labelledby="qr-format-label">
-          {formats.map((item) => (
+        <div className="format-buttons" role="group" aria-labelledby="qr-kind-label">
+          {payloadKinds.map((item) => (
             <button
               key={item.value}
               className="format-button"
               type="button"
-              aria-pressed={format === item.value}
-              onClick={() => setFormat(item.value)}
+              aria-pressed={kind === item.value}
+              onClick={() => setKind(item.value)}
             >
               {item.label}
             </button>
           ))}
         </div>
       </div>
-      <QrFields format={format} form={form} setValue={setValue} />
+      <QrFields kind={kind} form={form} setValue={setValue} />
       <div className="actions">
         <button
           className="secondary-button"
           type="button"
           onClick={() => {
-            setFormat("url");
+            setKind("url");
             setForm(sampleQrForm);
           }}
         >
@@ -174,15 +174,15 @@ export default function QrTool() {
 }
 
 function QrFields({
-  format,
+  kind,
   form,
   setValue,
 }: {
-  format: QrFormat;
+  kind: QrPayloadKind;
   form: QrForm;
   setValue: <K extends keyof QrForm>(key: K, value: QrForm[K]) => void;
 }) {
-  switch (format) {
+  switch (kind) {
     case "url":
       return (
         <div className="field">
