@@ -4,7 +4,7 @@ test.describe("app shell", () => {
   test("loads, opens the command palette, and opens a tool", async ({ page }) => {
     await page.goto("/");
 
-    await expect(page.getByRole("heading", { name: /regex101/i })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: /regex101/i })).toBeVisible();
 
     await page.getByRole("button", { name: /search tools/i }).click();
 
@@ -12,7 +12,7 @@ test.describe("app shell", () => {
 
     await page.getByRole("button", { name: /base64/i }).first().click();
 
-    await expect(page.getByRole("heading", { name: /base64/i })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: /base64/i })).toBeVisible();
   });
 
   test("converts pasted China log time to UTC", async ({ page }) => {
@@ -99,5 +99,30 @@ test.describe("app shell", () => {
     await expect(parsed.getByRole("button", { name: /copy unix seconds/i })).toBeVisible();
     await expect(parsed.getByRole("button", { name: /copy unix milliseconds/i })).toBeVisible();
     await expect(page.getByLabel(/converted time zones/i).getByRole("button", { name: /copy UTC/i })).toBeVisible();
+  });
+
+  test("generates and downloads a local QR code", async ({ page }) => {
+    await page.goto("/#/qr");
+
+    await expect(page.getByRole("heading", { level: 1, name: /qr code/i })).toBeVisible();
+    await expect(page.getByLabel(/url/i)).toHaveValue("");
+    await expect(page.getByText(/enter content to generate a qr code/i)).toBeVisible();
+
+    await page.getByRole("button", { name: /sample url/i }).click();
+    await expect(page.getByLabel(/url/i)).toHaveValue("https://example.com");
+    await page.getByRole("button", { name: /clear/i }).click();
+
+    await page.getByRole("button", { name: /^sms$/i }).click();
+    await page.getByLabel(/phone number/i).fill("+1 (415) 555-0100");
+    await page.getByLabel(/message/i).fill("Ship it");
+
+    await expect(page.getByLabel(/qr preview/i).getByAltText(/generated qr code/i)).toBeVisible();
+    await expect(page.getByText("sms:+14155550100?body=Ship+it")).toBeVisible();
+
+    const download = page.waitForEvent("download");
+    await page.getByRole("button", { name: /^svg$/i }).click();
+    const file = await download;
+
+    expect(file.suggestedFilename()).toBe("qr-code.svg");
   });
 });

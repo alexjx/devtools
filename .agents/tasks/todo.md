@@ -206,3 +206,88 @@ Verification:
 - `npm run build` passed.
 - `GITHUB_PAGES=true npm run build` passed.
 - `npm run e2e` passed: 14 browser tests across desktop Chromium and mobile Pixel 7.
+
+## QR Generator Review
+
+- [x] Inspect local tool architecture and dependency constraints.
+- [x] Review `qr.io` visible QR workflows and supported content formats.
+- [x] Identify what can be replicated locally without account-backed dynamic QR infrastructure.
+- [x] Recommend lean scope, data model, dependencies, tests, and verification plan.
+
+## QR Generator Review Notes
+
+QR.io uses a content -> design -> download workflow. The public live form supports field-based static content for Link, Text, E-mail, Call, SMS, V-card, WhatsApp, and WI-FI. Its public navigation also advertises PDF, App, Images, Video, Social Media, Event, 2D Barcode, and more dynamic/hosted formats, but those are account or backend-backed workflows rather than self-contained local encodings.
+
+Download is account-gated: clicking Download QR Code posts payload/style data to `https://qr.io/generator2/ajax/process-index.php`, receives SVG, and then opens a signup modal. Dynamic QR codes, editable destinations, scan analytics, hosted landing pages, file uploads, team/API/bulk features, and dashboards do not fit this static SPA without adding backend state.
+
+Recommended v1 is a local static QR generator with URL, Text, Email, Phone, SMS, WhatsApp, Wi-Fi, vCard, and optionally Event payload builders; SVG preview; PNG/SVG downloads; copyable payload; error correction, size, margin, dark/light color, and transparent background controls.
+
+Detailed notes are in `.agents/research/qr-generator-review.md`.
+
+## Basic Local QR Generator
+
+- [x] Add lean QR encoding dependency.
+- [x] Implement local static payload builders for common formats.
+- [x] Add QR Code tool UI with simple format fields and preview.
+- [x] Register the tool in navigation/search.
+- [x] Add unit and e2e coverage.
+- [x] Run build/test/e2e verification.
+
+## Basic Local QR Generator Review
+
+Implemented a local static QR Code tool under Generators. Supported formats: URL, Text, Email, Phone, SMS, WhatsApp, Wi-Fi, and vCard. The tool renders an in-browser QR preview, shows the exact encoded payload, and supports copying the payload plus downloading SVG or PNG.
+
+Dependency added: `qrcode` with `@types/qrcode`.
+
+Verification:
+
+- `npm run test` passed: 6 files, 25 tests.
+- `npm run build` passed.
+- `GITHUB_PAGES=true npm run build` passed.
+- `npm run e2e` passed: 16 browser tests across desktop Chromium and mobile Pixel 7.
+- Visual checks captured: `.agents/research/qr-desktop.png` and `.agents/research/qr-mobile.png`.
+
+Audit note:
+
+- `npm audit` reports 5 vulnerabilities through the existing `vitest` 2.x toolchain and nested Vite/esbuild packages. The available fix is a major Vitest upgrade to 4.x, so it was not bundled into this QR feature.
+
+## QR Category Buttons
+
+- [x] Replace the QR format dropdown with quick-select buttons.
+- [x] Keep keyboard and screen-reader semantics clear.
+- [x] Update browser coverage and rerun verification.
+
+## QR Category Buttons Review
+
+Replaced the QR format dropdown with a quick-select button grid. The selected format uses `aria-pressed`, and the group is labelled by the Format label for assistive tech. Desktop uses a 4x2 grid; mobile uses a 2-column grid with touch-size buttons.
+
+Verification:
+
+- `npm run test` passed: 6 files, 25 tests.
+- `npm run build` passed.
+- `GITHUB_PAGES=true npm run build` passed.
+- `npm run e2e` passed: 16 browser tests across desktop Chromium and mobile Pixel 7.
+- Visual checks captured: `.agents/research/qr-buttons-desktop.png` and `.agents/research/qr-buttons-mobile.png`.
+
+Test fix:
+
+- Tightened existing heading assertions to `level: 1` after e2e exposed ambiguous selectors matching both page `h1` and panel `h2`.
+
+## QR Empty Default URL
+
+- [x] Start the QR URL field empty instead of prefilled.
+- [x] Keep `Sample URL` as the explicit way to populate `https://example.com`.
+- [x] Update regression coverage for empty initial state.
+- [x] Run verification.
+
+## QR Empty Default URL Review
+
+Updated the QR tool so user-editable URL content starts empty. `Sample URL` now uses a separate sample form state to populate `https://example.com` only when requested. Clear resets back to the empty default.
+
+Verification:
+
+- `npm run test` passed: 6 files, 26 tests.
+- `npm run build` passed.
+- `GITHUB_PAGES=true npm run build` passed.
+- `npm run e2e` passed: 16 browser tests across desktop Chromium and mobile Pixel 7.
+- Visual check captured: `.agents/research/qr-empty-default-mobile.png`.

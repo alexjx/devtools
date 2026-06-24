@@ -7,6 +7,7 @@ import {
   Hash,
   KeyRound,
   Link2,
+  QrCode,
   type LucideIcon,
   Regex,
 } from "lucide-react";
@@ -82,6 +83,16 @@ export const tools: Tool[] = [
     route: "/uuid",
     icon: Fingerprint,
     component: lazy(() => import("./uuid/UuidTool")),
+  },
+  {
+    id: "qr",
+    title: "QR Code",
+    category: "Generators",
+    description: "Generate static QR codes locally.",
+    aliases: ["qr", "qrcode", "barcode", "wifi qr", "vcard"],
+    route: "/qr",
+    icon: QrCode,
+    component: lazy(() => import("./qr/QrTool")),
   },
   {
     id: "hash",
