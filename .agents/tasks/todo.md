@@ -291,3 +291,52 @@ Verification:
 - `GITHUB_PAGES=true npm run build` passed.
 - `npm run e2e` passed: 16 browser tests across desktop Chromium and mobile Pixel 7.
 - Visual check captured: `.agents/research/qr-empty-default-mobile.png`.
+
+## UUID Version Selector
+
+- [x] Confirm UUID standard/package support and choose the lean implementation.
+- [x] Add UUID generation helpers for selectable versions.
+- [x] Update the UUID tool UI with a version selector and name/namespace inputs where needed.
+- [x] Add unit and e2e coverage for selected versions.
+- [x] Run build/test/e2e verification.
+
+## UUID Version Selector Review
+
+Implemented selectable UUID generation using `uuid@14.0.1`, which targets RFC 9562 UUIDs. The UUID tool now supports v1, v3, v4, v5, v6, and v7. v4 remains the default. v3 and v5 expose name and namespace controls because they are deterministic name-based UUIDs; `Generate ten` is disabled for those versions to avoid duplicate deterministic output.
+
+Verification:
+
+- `npm run test` passed: 6 files, 29 tests.
+- `npm run build` passed.
+- `GITHUB_PAGES=true npm run build` passed.
+- `npm run e2e` passed: 18 browser tests across desktop Chromium and mobile Pixel 7.
+- Visual checks captured: `.agents/research/uuid-versions-desktop.png` and `.agents/research/uuid-versions-mobile.png`.
+
+Reference:
+
+- RFC 9562: `https://www.rfc-editor.org/info/rfc9562`
+
+## UUID Version Descriptions
+
+- [x] Replace ambiguous version labels with ID-first labels.
+- [x] Add short descriptions explaining what each UUID version does.
+- [x] Update coverage and run verification.
+
+## UUID Version Descriptions Review
+
+Updated UUID version choices to show the ID and a short description for each version:
+
+- `v1 Time + Node`: timestamp, clock sequence, and node identifier.
+- `v3 Name MD5`: deterministic namespace + name UUID using MD5.
+- `v4 Random`: random UUID and the default.
+- `v5 Name SHA-1`: deterministic namespace + name UUID using SHA-1.
+- `v6 Ordered Time`: v1-style time UUID reordered for better sorting.
+- `v7 Unix Time`: Unix timestamp plus randomness for modern sortable IDs.
+
+Verification:
+
+- `npm run test` passed: 6 files, 29 tests.
+- `npm run build` passed.
+- `GITHUB_PAGES=true npm run build` passed.
+- `npm run e2e` passed: 18 browser tests across desktop Chromium and mobile Pixel 7.
+- Visual checks captured: `.agents/research/uuid-descriptions-desktop.png` and `.agents/research/uuid-descriptions-mobile.png`.

@@ -356,6 +356,10 @@ kbd {
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
+.uuid-version-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .format-button {
   background: var(--surface-soft);
   border: 1px solid var(--line-strong);
@@ -376,6 +380,46 @@ kbd {
   background: var(--accent-soft);
   border-color: #b9c7f3;
   color: #1d4ed8;
+}
+
+.format-button.detail {
+  align-items: flex-start;
+  display: grid;
+  gap: 4px;
+  min-height: 78px;
+  padding: 9px 10px;
+  text-align: left;
+}
+
+.format-button.detail span {
+  align-items: baseline;
+  display: flex;
+  gap: 7px;
+  line-height: 1.2;
+}
+
+.format-button.detail strong {
+  color: inherit;
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.format-button.detail small {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.format-button.detail[aria-pressed="true"] small {
+  color: #315fba;
+}
+
+.format-button:disabled,
+.secondary-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
 }
 
 .qr-preview {
@@ -695,6 +739,10 @@ kbd {
 
   .format-buttons {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .uuid-version-grid {
+    grid-template-columns: 1fr;
   }
 
   .copy-chip {

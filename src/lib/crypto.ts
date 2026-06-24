@@ -1,5 +1,26 @@
+import {
+  v1 as uuidV1,
+  v3 as uuidV3,
+  v4 as uuidV4,
+  v5 as uuidV5,
+  v6 as uuidV6,
+  v7 as uuidV7,
+  validate as validateUuid,
+} from "uuid";
+
 export type HashAlg = "SHA-1" | "SHA-256" | "SHA-384" | "SHA-512";
 export type HashAlgorithm = HashAlg;
+export type UuidVersion = "v1" | "v3" | "v4" | "v5" | "v6" | "v7";
+export type UuidNamespace = "dns" | "url" | "custom";
+
+export type UuidOptions = {
+  version?: UuidVersion;
+  name?: string;
+  namespace?: UuidNamespace;
+  customNamespace?: string;
+};
+
+export const uuidVersions: UuidVersion[] = ["v1", "v3", "v4", "v5", "v6", "v7"];
 
 const HEX = Array.from({ length: 256 }, (_, index) => index.toString(16).padStart(2, "0"));
 
@@ -40,40 +61,57 @@ function toHex(bytes: Uint8Array): string {
   return output;
 }
 
-function randomBytes(size: number): Uint8Array {
-  const bytes = new Uint8Array(size);
-  cryptoApi().getRandomValues(bytes);
-  return bytes;
-}
-
-function uuidFromBytes(bytes: Uint8Array): string {
-  bytes[6] = (bytes[6]! & 15) | 64;
-  bytes[8] = (bytes[8]! & 63) | 128;
-
-  const hex = toHex(bytes);
-  return [
-    hex.slice(0, 8),
-    hex.slice(8, 12),
-    hex.slice(12, 16),
-    hex.slice(16, 20),
-    hex.slice(20),
-  ].join("-");
-}
-
 export async function hashText(text: string, algo: HashAlg | string = "SHA-256"): Promise<string> {
   const api = cryptoApi();
   const digest = await api.subtle.digest(normalizeAlgo(algo), new TextEncoder().encode(text));
   return toHex(new Uint8Array(digest));
 }
 
-export function uuid(): string {
-  const api = cryptoApi();
+export function isNameBasedUuid(version: UuidVersion): boolean {
+  return version === "v3" || version === "v5";
+}
 
-  if (typeof api.randomUUID === "function") {
-    return api.randomUUID();
+function uuidNamespace(options: UuidOptions): string {
+  switch (options.namespace ?? "dns") {
+    case "dns":
+      return uuidV5.DNS;
+    case "url":
+      return uuidV5.URL;
+    case "custom": {
+      const namespace = options.customNamespace?.trim() ?? "";
+      if (!validateUuid(namespace)) {
+        throw new Error("Enter a valid namespace UUID.");
+      }
+      return namespace;
+    }
+  }
+}
+
+function uuidName(options: UuidOptions): string {
+  const name = options.name ?? "";
+
+  if (!name) {
+    throw new Error("Enter a name for UUID v3/v5.");
   }
 
-  return uuidFromBytes(randomBytes(16));
+  return name;
+}
+
+export function uuid(options: UuidOptions = {}): string {
+  switch (options.version ?? "v4") {
+    case "v1":
+      return uuidV1();
+    case "v3":
+      return uuidV3(uuidName(options), uuidNamespace(options));
+    case "v4":
+      return uuidV4();
+    case "v5":
+      return uuidV5(uuidName(options), uuidNamespace(options));
+    case "v6":
+      return uuidV6();
+    case "v7":
+      return uuidV7();
+  }
 }
 
 export const digest = hashText;

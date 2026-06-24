@@ -125,4 +125,24 @@ test.describe("app shell", () => {
 
     expect(file.suggestedFilename()).toBe("qr-code.svg");
   });
+
+  test("generates selected UUID versions", async ({ page }) => {
+    await page.goto("/#/uuid");
+
+    await expect(page.getByText(/random uuid\. best default/i)).toBeVisible();
+
+    await page.getByRole("button", { name: /v7.*unix time/i }).click();
+    await expect(page.locator(".output")).toContainText(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
+    );
+
+    await page.getByRole("button", { name: /v5.*name sha-1/i }).click();
+    await expect(page.getByRole("button", { name: /generate ten/i })).toBeDisabled();
+    await page.getByLabel(/^name$/i).fill("example.com");
+    await page.getByRole("button", { name: /generate one/i }).click();
+
+    await expect(page.locator(".output")).toContainText(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-5[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
+    );
+  });
 });
