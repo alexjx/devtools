@@ -340,3 +340,32 @@ Verification:
 - `GITHUB_PAGES=true npm run build` passed.
 - `npm run e2e` passed: 18 browser tests across desktop Chromium and mobile Pixel 7.
 - Visual checks captured: `.agents/research/uuid-descriptions-desktop.png` and `.agents/research/uuid-descriptions-mobile.png`.
+
+## App Icon Configuration
+
+- [x] Generate an initial project app icon with the image generation skill.
+- [x] Replace the complex generated icon with a simplified single-color SVG source.
+- [x] Create favicon, PNG icon, Apple touch icon, and web manifest assets from the simplified source.
+- [x] Configure `index.html` icon and manifest links for the GitHub Pages base path.
+- [x] Run test and Pages-mode build verification.
+
+## App Icon Configuration Review
+
+Configured a single-color developer-tools app icon and browser/mobile icon references. The final source is a simple SVG terminal mark in one blue color, with PNG/ICO variants generated from that source.
+
+Assets added under `public/`:
+
+- `icon.svg`
+- `favicon.ico`
+- `favicon-16.png`
+- `favicon-32.png`
+- `apple-touch-icon.png`
+- `icon-192.png`
+- `icon-512.png`
+- `site.webmanifest`
+
+Verification:
+
+- `npm run test` passed: 6 files, 29 tests.
+- `GITHUB_PAGES=true npm run build` passed.
+- Built `dist/index.html` references icons under `/devtools/`.
