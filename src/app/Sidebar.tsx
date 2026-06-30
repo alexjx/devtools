@@ -2,6 +2,8 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
 import { tools } from "../tools/registry";
 
+const appVersion = import.meta.env.VITE_APP_VERSION;
+
 type Props = {
   activeId: string;
   open: boolean;
@@ -41,7 +43,10 @@ function Nav({ activeId, onNavigate }: Pick<Props, "activeId" | "onNavigate">) {
 
   return (
     <nav aria-label="Tools">
-      <div className="brand">Devtools</div>
+      <div className="brand">
+        <span>Devtools</span>
+        <span className="brand-version">{appVersion}</span>
+      </div>
       {Object.entries(groups).map(([category, items]) => (
         <section className="nav-group" key={category}>
           <h2>{category}</h2>
