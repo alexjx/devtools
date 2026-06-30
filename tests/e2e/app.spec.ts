@@ -89,6 +89,16 @@ test.describe("app shell", () => {
     await expect(page.getByLabel(/converted time zones/i)).not.toContainText("Unix milliseconds");
   });
 
+  test("formats repaired json from a pasted log line", async ({ page }) => {
+    await page.goto("/#/json");
+
+    await page.getByLabel(/^input$/i).fill('[INFO] payload={"ok":true,"items":[1,2,');
+
+    await expect(page.locator(".output")).toContainText('"ok": true');
+    await expect(page.locator(".output")).toContainText('"items": [');
+    await expect(page.locator(".error")).toHaveCount(0);
+  });
+
   test("shows top-right copy buttons for parsed and timezone values", async ({ page }) => {
     await page.goto("/#/timestamp");
 

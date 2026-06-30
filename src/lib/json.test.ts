@@ -19,6 +19,39 @@ describe("json", () => {
     expect(minifyJson(input)).toBe('{"b":2,"a":[1,2]}');
   });
 
+  it("formats json object pasted from a log line", () => {
+    expect(formatJson('INFO request payload={"ok":true,"count":2} done')).toBe(`{
+  "ok": true,
+  "count": 2
+}`);
+  });
+
+  it("skips non-json log prefixes before the payload", () => {
+    expect(formatJson('[INFO] request payload={"ok":true}')).toBe(`{
+  "ok": true
+}`);
+  });
+
+  it("repairs missing closing braces and trailing commas while formatting", () => {
+    expect(formatJson('{"ok":true,"items":[1,2,')).toBe(`{
+  "ok": true,
+  "items": [
+    1,
+    2
+  ]
+}`);
+  });
+
+  it("repairs an unfinished string while formatting", () => {
+    expect(formatJson('{"message":"hello')).toBe(`{
+  "message": "hello"
+}`);
+  });
+
+  it("keeps unrepairable json invalid", () => {
+    expect(() => formatJson('INFO payload={"a":')).toThrow("Invalid JSON");
+  });
+
   it("validates malformed json", () => {
     const result = validateJson("{");
 
