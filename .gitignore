@@ -5,3 +5,8 @@ playwright-report/
 .DS_Store
 *.tsbuildinfo
 .agents/research/*.png
+
+
+# agent
+.agents/
+.claude/
